@@ -109,6 +109,19 @@ ros2 launch go2_config gazebo_velodyne.launch.py rviz:=true
 
 ![Go2 Velodyne Gazebo RViz Launch](.docs/gazebo_velodyne_rviz_launch.png)
 
+### 2.6 Go2 Hokoyu 2D LiDAR Config Gazbeo demo: Run the Gazebo environment
+
+> NOTE: To use Laser instead of 3D Velodyne LiDAR, comment `<xacro:include filename="$(find go2_description)/xacro/velodyne.xacro"/>` and uncomment `<xacro:include filename="$(find go2_description)/xacro/laser.xacro"/>` in `robot_VLP.xacro` file located inside `robots/description/go2_description/xacro/` folder.
+
+```bash
+ros2 launch go2_config gazebo_velodyne.launch.py 
+```
+
+To Run the gazebo along with rviz
+```bash
+ros2 launch go2_config gazebo_velodyne.launch.py rviz:=true
+```
+
 ## 3. Tuning gait parameters
 
 The gait configuration for your robot can be found in <my_robot_config>/gait/gait.yaml.

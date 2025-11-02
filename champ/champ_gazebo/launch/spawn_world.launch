@@ -3,10 +3,10 @@
     <arg name="gui"                default="true"/>
     <arg name="headless"           default="false"/>
     <arg name="paused"             default="false"/>
-    <arg name="gazebo_world"       default="$(find champ_gazebo)/worlds/outdoor.world" />
+    <arg name="gazebo_world"       default="$(find champ_gazebo)/worlds/default.world" />
 
     <!-- this should be only called once on multi-robot simulation -->
-    <include file="$(find gazebo_ros)/launch/empty_world.launch">
+    <include file="$(find ros_gz_sim)/launch/empty_world.launch">
         <arg name="world_name" value="$(arg gazebo_world)"/>
         <arg name="gui" value="$(arg gui)" />
         <arg name="paused" value="$(arg paused)"/>

@@ -32,9 +32,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <urdf/model.h>
 // #include <utils/xmlrpc_helpers.h>
 
-#include <quadruped_base/quadruped_base.h>
-#include <quadruped_base/quadruped_leg.h>
-#include <quadruped_base/quadruped_joint.h>
+#include <champ/quadruped_base/quadruped_base.h>
+#include <champ/quadruped_base/quadruped_leg.h>
+#include <champ/quadruped_base/quadruped_joint.h>
 
 namespace champ
 {

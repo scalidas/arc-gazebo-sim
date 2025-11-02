@@ -28,11 +28,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef LEG_CONTROLLER_H
 #define LEG_CONTROLLER_H
 
-#include <geometry/geometry.h>
-#include <quadruped_base/quadruped_base.h>
-#include <quadruped_base/quadruped_components.h>
-#include <leg_controller/trajectory_planner.h>
-#include <leg_controller/phase_generator.h>
+#include <champ/geometry/geometry.h>
+#include <champ/quadruped_base/quadruped_base.h>
+#include <champ/quadruped_base/quadruped_components.h>
+#include <champ/leg_controller/trajectory_planner.h>
+#include <champ/leg_controller/phase_generator.h>
 
 namespace champ
 {

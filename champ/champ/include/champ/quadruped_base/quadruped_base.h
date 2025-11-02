@@ -28,9 +28,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef QUADRUPPED_BASE_H
 #define QUADRUPPED_BASE_H
 
-#include <geometry/geometry.h>
-#include <quadruped_base/quadruped_leg.h>
-#include <quadruped_base/quadruped_components.h>
+#include <champ/geometry/geometry.h>
+#include <champ/quadruped_base/quadruped_leg.h>
+#include <champ/quadruped_base/quadruped_components.h>
 
 namespace champ
 {

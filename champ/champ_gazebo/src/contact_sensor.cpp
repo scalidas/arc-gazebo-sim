@@ -16,91 +16,97 @@
 */
 #include <rclcpp/rclcpp.hpp>
 #include <iostream>
-#include <champ/utils/urdf_loader.h>
-#include <gazebo/transport/transport.hh>
-#include <gazebo/msgs/msgs.hh>
-#include <gazebo/gazebo_client.hh>
-#include "gazebo/physics/World.hh"
-#include "gazebo/physics/ContactManager.hh"
 #include <boost/algorithm/string.hpp>
+#include <functional>
+
+#include <gz/transport/Node.hh>
+#include <gz/msgs/contacts.pb.h>
 #include <champ_msgs/msg/contacts_stamped.hpp>
+#include <champ/utils/urdf_loader.h>
 
 class ContactSensor: public rclcpp::Node
 {
 	bool foot_contacts_[4];
 	std::vector<std::string> foot_links_;
 	rclcpp::Publisher<champ_msgs::msg::ContactsStamped>::SharedPtr contacts_publisher_;
-	gazebo::transport::SubscriberPtr gazebo_sub;
-    
-	public:
-		ContactSensor():
-			foot_contacts_ {false,false,false,false},
-			Node("contacts_sensor",rclcpp::NodeOptions()
-                        .allow_undeclared_parameters(true)
-                        .automatically_declare_parameters_from_overrides(true))
+	std::unique_ptr<gz::transport::Node> gz_node_;
+	bool gz_subscribed_ {false};
+
+public:
+	ContactSensor():
+		foot_contacts_ {false,false,false,false},
+		Node("contacts_sensor", rclcpp::NodeOptions()
+				.allow_undeclared_parameters(true)
+				.automatically_declare_parameters_from_overrides(true))
+	{
+		std::vector<std::string> joint_names;
+
+		joint_names = champ::URDF::getLinkNames(this->get_node_parameters_interface());
+		// Keep the same indices as before (assumes URDF layout is unchanged)
+		foot_links_.push_back(joint_names[2]);
+		foot_links_.push_back(joint_names[6]);
+		foot_links_.push_back(joint_names[10]);
+		foot_links_.push_back(joint_names[14]);
+
+		contacts_publisher_ = this->create_publisher<champ_msgs::msg::ContactsStamped>("foot_contacts", 10);
+
+		// Initialize Ignition (gz) transport node
+		gz_node_.reset(new gz::transport::Node());
+
+		// Bind member callback into a std::function to match transport v13 API
+		std::function<void(const gz::msgs::Contacts&)> cb =
+			std::bind(&ContactSensor::gazeboCallback, this, std::placeholders::_1);
+
+		// Subscribe to the contacts topic with the correct Ignition topic name
+		gz_subscribed_ = gz_node_->Subscribe("/world/default/physics/contacts", cb);
+	}
+
+	~ContactSensor() = default;
+
+	// New callback signature: const reference to gz::msgs::Contacts
+	void gazeboCallback(const gz::msgs::Contacts &_msg)
+	{
+		for(size_t i = 0; i < 4; i++)
 		{
-			std::vector<std::string> joint_names;
-
-			joint_names = champ::URDF::getLinkNames(this->get_node_parameters_interface());
-			foot_links_.push_back(joint_names[2]);
-			foot_links_.push_back(joint_names[6]);
-			foot_links_.push_back(joint_names[10]);
-			foot_links_.push_back(joint_names[14]);
-
-			contacts_publisher_   = this->create_publisher<champ_msgs::msg::ContactsStamped>("foot_contacts", 10);
-			
-			gazebo::client::setup();
-			gazebo::transport::NodePtr node(new gazebo::transport::Node());
-			node->Init();
-
-			gazebo_sub = node->Subscribe("~/physics/contacts", &ContactSensor::gazeboCallback_, this);
+			foot_contacts_[i] = false;
 		}
 
-		void gazeboCallback_(ConstContactsPtr &_msg)
+		for (int i = 0; i < _msg.contact_size(); ++i)
 		{
-			for(size_t i = 0; i < 4; i++)
-			{
-				foot_contacts_[i] = false;
-			}
+			std::vector<std::string> results;
+			// collision1() is an Entity message in this transport version; use its name()
+			std::string collision = _msg.contact(i).collision1().name();
+			boost::split(results, collision, [](char c){ return c == ':'; });
 
-			for (int i = 0; i < _msg->contact_size(); ++i) 
+			// Make sure we have enough parts before indexing
+			if (results.size() >= 3)
 			{
-				std::vector<std::string> results;
-				std::string collision = _msg->contact(i).collision1();
-				boost::split(results, collision, [](char c){return c == ':';});
-
 				for(size_t j = 0; j < 4; j++)
 				{
-					if(foot_links_[j] == results[2])
+					if (foot_links_[j] == results[2])
 					{
 						foot_contacts_[j] = true;
 						break;
 					}
 				}
 			}
-
 		}
+	}
 
-		void publishContacts()	
+	void publishContacts()
+	{
+		champ_msgs::msg::ContactsStamped contacts_msg;
+		contacts_msg.header.stamp = this->get_clock()->now();
+		contacts_msg.contacts.resize(4);
+
+		for(size_t i = 0; i < 4; i++)
 		{
-			champ_msgs::msg::ContactsStamped contacts_msg;
-			contacts_msg.header.stamp = this->get_clock()->now();
-			contacts_msg.contacts.resize(4);
-
-			for(size_t i = 0; i < 4; i++)
-			{
-				contacts_msg.contacts[i] = foot_contacts_[i];
-			}
-			
-			contacts_publisher_->publish(contacts_msg);
+			contacts_msg.contacts[i] = foot_contacts_[i];
 		}
-};
 
-void exitHandler(int sig)
-{
-	gazebo::client::shutdown();
-	rclcpp::shutdown();
-}
+		contacts_publisher_->publish(contacts_msg);
+	}
+};
 
 int main(int argc, char **argv)
 {
@@ -114,6 +120,7 @@ int main(int argc, char **argv)
 		rclcpp::spin_some(node);
 		loop_rate.sleep();
 	}
+
 	rclcpp::shutdown();
 	return 0;
 }

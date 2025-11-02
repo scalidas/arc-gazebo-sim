@@ -28,7 +28,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef QUADRUPED_JOINT_H
 #define QUADRUPED_JOINT_H
 
-#include <quadruped_base/quadruped_components.h>
+#include <champ/quadruped_base/quadruped_components.h>
 
 namespace champ
 {

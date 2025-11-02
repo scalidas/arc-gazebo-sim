@@ -28,8 +28,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef QUADRUPPED_LEG_H
 #define QUADRUPPED_LEG_H
 
-#include <geometry/geometry.h>
-#include <quadruped_base/quadruped_joint.h>
+#include <champ/geometry/geometry.h>
+#include <champ/quadruped_base/quadruped_joint.h>
 
 namespace champ
 {

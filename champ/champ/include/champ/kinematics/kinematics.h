@@ -33,9 +33,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     using namespace std;
 #endif
 
-#include <macros/macros.h>
-#include <geometry/geometry.h>
-#include <quadruped_base/quadruped_base.h>
+#include <champ/macros/macros.h>
+#include <champ/geometry/geometry.h>
+#include <champ/quadruped_base/quadruped_base.h>
 
 namespace champ
 {

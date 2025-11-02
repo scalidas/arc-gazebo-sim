@@ -26,10 +26,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef ODOMETRY_H
 #define ODOMETRY_H
 
-#include <quadruped_base/quadruped_base.h>
-#include <macros/macros.h>
+#include <champ/quadruped_base/quadruped_base.h>
+#include <champ/macros/macros.h>
 
-#include <geometry/geometry.h>
+#include <champ/geometry/geometry.h>
 
 namespace champ
 {

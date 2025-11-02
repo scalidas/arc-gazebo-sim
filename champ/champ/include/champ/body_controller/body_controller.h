@@ -28,10 +28,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef BODY_CONTROLLER_H
 #define BODY_CONTROLLER_H
 
-#include <geometry/geometry.h>
-#include <quadruped_base/quadruped_base.h>
-#include <quadruped_base/quadruped_leg.h>
-#include <kinematics/kinematics.h>
+#include <champ/geometry/geometry.h>
+#include <champ/quadruped_base/quadruped_base.h>
+#include <champ/quadruped_base/quadruped_leg.h>
+#include <champ/kinematics/kinematics.h>
 
 namespace champ
 {

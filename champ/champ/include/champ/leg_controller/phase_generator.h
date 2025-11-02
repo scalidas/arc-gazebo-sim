@@ -28,8 +28,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef PHASE_GENERATOR_H
 #define PHASE_GENERATOR_H
 
-#include <macros/macros.h>
-#include <quadruped_base/quadruped_base.h>
+#include <champ/macros/macros.h>
+#include <champ/quadruped_base/quadruped_base.h>
 
 namespace champ
 {

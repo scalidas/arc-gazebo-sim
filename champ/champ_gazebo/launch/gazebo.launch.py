@@ -25,7 +25,7 @@ def generate_launch_description():
     world_init_y = LaunchConfiguration("world_init_y")
     world_init_z = LaunchConfiguration("world_init_z")
     world_init_heading = LaunchConfiguration("world_init_heading")
-    gazebo_world = LaunchConfiguration("world")
+    # gazebo_world = LaunchConfiguration("world")
     gz_pkg_share = launch_ros.substitutions.FindPackageShare(package="champ_gazebo").find(
         "champ_gazebo"
     )
@@ -40,9 +40,9 @@ def generate_launch_description():
         "ros_control_file",
         default_value=os.path.join(gz_pkg_share, "config/ros_control.yaml"),
     )
-    declare_gazebo_world = DeclareLaunchArgument(
+    '''declare_gazebo_world = DeclareLaunchArgument(
         "world", default_value=os.path.join(gz_pkg_share, "worlds/default.world")
-    )
+    )'''
     declare_world_init_x = DeclareLaunchArgument("world_init_x", default_value="0.0")
     declare_world_init_y = DeclareLaunchArgument("world_init_y", default_value="0.0")
     declare_world_init_z = DeclareLaunchArgument("world_init_z", default_value="0.6")
@@ -64,54 +64,31 @@ def generate_launch_description():
         package="champ_gazebo"
     ).find("champ_gazebo"), "config/gazebo.yaml")
     launch_dir = os.path.join(pkg_share, "launch")
-    # Specify the actions
+    # Specify the actions using Ignition instead of Gazebo Classic
     start_gazebo_server_cmd = ExecuteProcess(
-        cmd=[
-            "gzserver",
-            "-s",
-            "libgazebo_ros_init.so",
-            "-s",
-            "libgazebo_ros_factory.so",
-            gazebo_world,
-            '--ros-args',
-            '--params-file',
-            gazebo_config
-        ],
-        cwd=[launch_dir],
-        output="screen",
+        cmd=['ign', 'gazebo', '--headless-rendering'],
+        output='screen'
     )
-
 
     start_gazebo_client_cmd = ExecuteProcess(
         condition=IfCondition(PythonExpression([" not ", headless])),
-        cmd=["gzclient"],
-        cwd=[launch_dir],
-        output="screen",
+        cmd=['ign', 'gazebo', '-v4', '--gui'],
+        output='screen'
     )
+
+    # Use ros_gz_sim instead of gazebo_ros
     start_gazebo_spawner_cmd = Node(
-        package="gazebo_ros",
-        executable="spawn_entity.py",
-        output="screen",
+        package='ros_gz_sim',
+        executable='create',
+        output='screen',
         arguments=[
-            "-entity",
-            robot_name,
-            "-topic",
-            "/robot_description",
-            "-robot_namespace",
-            "",
-            "-x",
-            world_init_x,
-            "-y",
-            world_init_y,
-            "-z",
-            world_init_z,
-            "-R",
-            "0",
-            "-P",
-            "0",
-            "-Y",
-            world_init_heading,
-        ],
+            '-name', robot_name,
+            '-topic', '/robot_description',
+            '-x', world_init_x,
+            '-y', world_init_y,
+            '-z', world_init_z,
+            '-Y', world_init_heading
+        ]
     )
 
     # TODO as for right now, running contact sensor results in RTF being reduced by factor of 2x.
@@ -155,7 +132,7 @@ def generate_launch_description():
             declare_paused,
             declare_lite,
             declare_ros_control_file,
-            declare_gazebo_world,
+            #declare_gazebo_world,
             declare_world_init_x,
             declare_world_init_y,
             declare_world_init_z,

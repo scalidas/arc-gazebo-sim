@@ -23,7 +23,7 @@
 #ifndef GEOMETRY_H
 #define GEOMETRY_H
 
-#include "bla/basic_linear_algebra.h"
+#include "champ/bla/basic_linear_algebra.h"
 
 #include <math.h>
 
